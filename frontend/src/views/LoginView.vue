@@ -1,3 +1,11 @@
+<script setup>
+import Button from 'primevue/button'
+</script>
+
 <template>
-  <h1>Login</h1>
+  <div>
+    <h1>Login</h1>
+
+    <Button label="PrimeVue works" />
+  </div>
 </template>
