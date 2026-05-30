@@ -7,58 +7,66 @@ import ProjectView from '../views/ProjectView.vue'
 import TasksView from '../views/TasksView.vue'
 import NewsView from '../views/NewsView.vue'
 import SearchView from '../views/SearchView.vue'
+import MainLayout from '../layouts/MainLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
 
-  routes: [
-    {
-      path: '/',
-      redirect: '/dashboard',
-    },
+routes: [
+  {
+    path: '/',
+    redirect: '/dashboard',
+  },
 
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginView,
-    },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+  },
 
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: DashboardView,
-    },
+  {
+    path: '/',
+    component: MainLayout,
 
-    {
-      path: '/projects',
-      name: 'projects',
-      component: ProjectsView,
-    },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: DashboardView,
+      },
 
-    {
-      path: '/projects/:id',
-      name: 'project',
-      component: ProjectView,
-    },
+      {
+        path: 'projects',
+        name: 'projects',
+        component: ProjectsView,
+      },
 
-    {
-      path: '/tasks',
-      name: 'tasks',
-      component: TasksView,
-    },
+      {
+        path: 'projects/:id',
+        name: 'project',
+        component: ProjectView,
+      },
 
-    {
-      path: '/news',
-      name: 'news',
-      component: NewsView,
-    },
+      {
+        path: 'tasks',
+        name: 'tasks',
+        component: TasksView,
+      },
 
-    {
-      path: '/search',
-      name: 'search',
-      component: SearchView,
-    },
-  ],
+      {
+        path: 'news',
+        name: 'news',
+        component: NewsView,
+      },
+
+      {
+        path: 'search',
+        name: 'search',
+        component: SearchView,
+      },
+    ],
+  },
+],
 })
 
 export default router
