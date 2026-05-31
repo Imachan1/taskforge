@@ -10,6 +10,7 @@ import SearchView from '../views/SearchView.vue'
 
 import MainLayout from '../layouts/MainLayout.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
+import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,6 +77,14 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+router.beforeEach((to) => {
+  const auth = useAuthStore()
+
+  if (!auth.isAuthenticated && to.name !== 'login') {
+    return { name: 'login' }
+  }
 })
 
 export default router
