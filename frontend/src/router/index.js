@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import LoginView from '../views/LoginView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import GoogleCallbackView from '../views/GoogleCallbackView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import ProjectsView from '../views/ProjectsView.vue'
 import ProjectView from '../views/ProjectView.vue'
-import NewsView from '../views/NewsView.vue'
 import SearchView from '../views/SearchView.vue'
 
 import MainLayout from '../layouts/MainLayout.vue'
@@ -29,6 +30,16 @@ const router = createRouter({
           path: 'login',
           name: 'login',
           component: LoginView,
+        },
+        {
+          path: 'register',
+          name: 'register',
+          component: RegisterView,
+        },
+        {
+          path: 'auth/google/callback',
+          name: 'google-callback',
+          component: GoogleCallbackView,
         },
       ],
     },
@@ -57,12 +68,6 @@ const router = createRouter({
         },
 
         {
-          path: 'news',
-          name: 'news',
-          component: NewsView,
-        },
-
-        {
           path: 'search',
           name: 'search',
           component: SearchView,
@@ -72,11 +77,24 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore()
+  const publicRoutes = ['login', 'register', 'google-callback']
 
-  if (!auth.isAuthenticated && to.name !== 'login') {
+  if (to.name === 'google-callback') {
+    return true
+  }
+
+  if (auth.isAuthenticated && !auth.initialized) {
+    await auth.fetchCurrentUser()
+  }
+
+  if (!auth.isAuthenticated && !publicRoutes.includes(to.name)) {
     return { name: 'login' }
+  }
+
+  if (auth.isAuthenticated && ['login', 'register'].includes(to.name)) {
+    return { name: 'dashboard' }
   }
 })
 

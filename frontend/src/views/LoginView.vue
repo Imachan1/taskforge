@@ -15,6 +15,8 @@ const loading = ref(false)
 
 const router = useRouter()
 const auth = useAuthStore()
+const backendUrl =
+  import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000'
 
 const signIn = async () => {
   errorMessage.value = ''
@@ -35,6 +37,10 @@ const signIn = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const signInWithGoogle = () => {
+  window.location.href = `${backendUrl}/auth/google/redirect`
 }
 </script>
 
@@ -83,9 +89,18 @@ const signIn = async () => {
 
       <Button
         label="Continue with Google"
+        icon="pi pi-google"
         severity="secondary"
         fluid
+        @click="signInWithGoogle"
       />
+
+      <p class="auth-link">
+        Don't have an account?
+        <RouterLink :to="{ name: 'register' }">
+          Register
+        </RouterLink>
+      </p>
     </div>
   </div>
 </template>
@@ -110,5 +125,10 @@ const signIn = async () => {
 .divider {
   text-align: center;
   opacity: 0.5;
+}
+
+.auth-link {
+  margin: 0;
+  text-align: center;
 }
 </style>
