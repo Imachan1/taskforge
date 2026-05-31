@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,11 +16,37 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $user = User::firstOrCreate(
+            ['email' => 'valeriia@test.com'],
+            [
+                'name' => 'Valeriia',
+                'password' => 'password123',
+            ],
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $projects = [
+            [
+                'name' => 'TaskForge Launch',
+                'description' => 'Prepare the initial workspace, authentication, and project planning flow.',
+            ],
+            [
+                'name' => 'Client Portal',
+                'description' => 'Collect client requirements and track delivery milestones.',
+            ],
+            [
+                'name' => 'Internal Automation',
+                'description' => 'Automate recurring reporting and team status workflows.',
+            ],
+        ];
+
+        foreach ($projects as $project) {
+            Project::firstOrCreate(
+                [
+                    'owner_id' => $user->id,
+                    'name' => $project['name'],
+                ],
+                ['description' => $project['description']],
+            );
+        }
     }
 }
