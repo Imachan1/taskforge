@@ -2,6 +2,7 @@
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
+import Message from 'primevue/message'
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -9,18 +10,31 @@ import { useAuthStore } from '../stores/auth'
 
 const email = ref('')
 const password = ref('')
+const errorMessage = ref('')
+const loading = ref(false)
 
-const auth = useAuthStore()
 const router = useRouter()
+const auth = useAuthStore()
 
-function signIn() {
-  auth.login({
-    id: 1,
-    name: 'Valeria',
-    email: email.value,
-  })
+const signIn = async () => {
+  errorMessage.value = ''
+  loading.value = true
 
-  router.push('/dashboard')
+  try {
+    await auth.login({
+      email: email.value,
+      password: password.value,
+    })
+
+    await router.push({ name: 'dashboard' })
+  } catch (error) {
+    errorMessage.value =
+      error.response?.data?.message ||
+      error.response?.data?.errors?.email?.[0] ||
+      'Unable to sign in. Please try again.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -28,42 +42,51 @@ function signIn() {
   <div class="login-page">
     <h1>TaskForge</h1>
 
-```
-<p class="subtitle">
-  Sign in to continue
-</p>
+    <p class="subtitle">
+      Sign in to continue
+    </p>
 
-<div class="form">
-  <InputText
-    v-model="email"
-    placeholder="Email"
-  />
+    <div class="form">
+      <Message
+        v-if="errorMessage"
+        severity="error"
+        size="small"
+      >
+        {{ errorMessage }}
+      </Message>
 
-  <Password
-    v-model="password"
-    placeholder="Password"
-    :feedback="false"
-    toggleMask
-  />
+      <InputText
+        v-model="email"
+        placeholder="Email"
+        autocomplete="email"
+      />
 
-  <Button
-    label="Sign In"
-    fluid
-    @click="signIn"
-  />
+      <Password
+        v-model="password"
+        placeholder="Password"
+        autocomplete="current-password"
+        :feedback="false"
+        toggleMask
+        @keyup.enter="signIn"
+      />
 
-  <div class="divider">
-    OR
-  </div>
+      <Button
+        label="Sign In"
+        fluid
+        :loading="loading"
+        @click="signIn"
+      />
 
-  <Button
-    label="Continue with Google"
-    severity="secondary"
-    fluid
-  />
-</div>
-```
+      <div class="divider">
+        OR
+      </div>
 
+      <Button
+        label="Continue with Google"
+        severity="secondary"
+        fluid
+      />
+    </div>
   </div>
 </template>
 
