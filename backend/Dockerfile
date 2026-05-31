@@ -7,10 +7,13 @@ RUN composer install \
     --prefer-dist \
     --no-interaction \
     --no-progress \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --no-scripts
 
 COPY . .
-RUN composer dump-autoload --no-dev --classmap-authoritative --no-interaction
+RUN rm -f bootstrap/cache/*.php \
+    && composer dump-autoload --no-dev --classmap-authoritative --no-interaction --no-scripts \
+    && php artisan package:discover --ansi
 
 FROM php:8.3-cli-alpine
 
