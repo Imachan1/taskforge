@@ -1,208 +1,225 @@
 # TaskForge Deployment Guide
 
-This guide describes how to deploy TaskForge with:
+This guide prepares TaskForge for production deployment with minimal manual work.
 
-- Frontend on Vercel
-- Backend on Railway
-- Google OAuth through Laravel Socialite
-- Sanctum bearer tokens
+## Chosen Hosting Strategy
+
+For a free-tier pet project, the most realistic option is:
+
+- Backend: Render Web Service (Docker)
+- Frontend: Render Static Site
+- Database: Free PostgreSQL (recommended: Neon)
+
+Why this option:
+
+- Works with current monorepo structure.
+- `render.yaml` supports one-click blueprint deployment.
+- Laravel + Socialite + Sanctum are straightforward in this setup.
+- Free Render web/static is available for small personal projects.
+
+## Included Deployment Artifacts
+
+The repository now contains:
+
+- `render.yaml` (Render blueprint for backend + frontend)
+- `backend/Dockerfile` (production backend image)
+- `backend/.dockerignore`
+- `backend/scripts/start-render.sh` (startup script with migrate)
 
 ## Production Architecture
 
 ```text
-Vercel Vue SPA
-    |
-    | VITE_API_URL
-    v
-Railway Laravel API
-    |
-    v
-SQLite database
+Render Static Site (Vue)
+        |
+        | HTTPS API + Bearer token
+        v
+Render Docker Web Service (Laravel)
+        |
+        v
+Neon PostgreSQL (free)
 ```
 
-The application currently uses SQLite. For a durable production setup on Railway, attach a persistent volume or migrate to PostgreSQL before relying on production data.
+## Why Not SQLite in Free Production
 
-## Backend on Railway
+SQLite works locally and for prototyping, but on free web instances it is risky because local filesystem can be ephemeral across redeploy/restarts.
 
-### Railway Project Setup
+For stable production data, use PostgreSQL in production.
 
-1. Create a new Railway project.
-2. Connect the Git repository.
-3. Set the service root directory to `backend`.
-4. Railway can use `backend/Procfile`:
+SQLite is still supported for local development and can be used in production only if a persistent disk is guaranteed.
 
-```text
-web: php artisan serve --host=0.0.0.0 --port=$PORT
-```
+## Backend (Render Web Service)
 
-5. Add all required environment variables.
-6. Run migrations from Railway shell or deployment command:
+Render uses:
 
-```bash
-php artisan migrate --force
-```
+- `backend/Dockerfile`
+- startup script `backend/scripts/start-render.sh`
 
-Optional seed command:
+Startup script behavior:
 
-```bash
-php artisan db:seed --force
-```
+1. validates `APP_KEY`
+2. ensures SQLite file exists (if SQLite selected)
+3. runs `php artisan migrate --force`
+4. runs `php artisan storage:link` (non-fatal)
+5. starts server on `${PORT}`
 
-### Backend Production Environment Variables
+## Frontend (Render Static Site)
 
-Required:
+Render uses:
+
+- root directory: `frontend`
+- build command: `npm ci && npm run build`
+- publish directory: `dist`
+- SPA rewrite route to `/index.html` is included in `render.yaml`
+
+## Required Environment Variables
+
+### Backend required
 
 ```env
 APP_NAME=TaskForge
 APP_ENV=production
-APP_KEY=base64:...
 APP_DEBUG=false
-APP_URL=https://<your-railway-backend-domain>
-FRONTEND_URL=https://<your-vercel-frontend-domain>
+APP_URL=https://<backend-domain>.onrender.com
+FRONTEND_URL=https://<frontend-domain>.onrender.com
+APP_KEY=base64:...
 
-DB_CONNECTION=sqlite
+DB_CONNECTION=pgsql
+DB_URL=postgresql://<user>:<password>@<host>/<db>?sslmode=require
 
-SESSION_DRIVER=database
-SESSION_ENCRYPT=false
+SESSION_DRIVER=file
 SESSION_SECURE_COOKIE=true
 SESSION_SAME_SITE=lax
 
-SANCTUM_STATEFUL_DOMAINS=<your-vercel-frontend-domain>
-CORS_ALLOWED_ORIGINS=https://<your-vercel-frontend-domain>
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+
+SANCTUM_STATEFUL_DOMAINS=<frontend-domain>.onrender.com
+CORS_ALLOWED_ORIGINS=https://<frontend-domain>.onrender.com
 
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
-GOOGLE_REDIRECT_URI=https://<your-railway-backend-domain>/auth/google/callback
+GOOGLE_REDIRECT_URI=https://<backend-domain>.onrender.com/auth/google/callback
 ```
 
-Recommended:
+Notes:
+
+- `SANCTUM_STATEFUL_DOMAINS` must contain host only (no protocol/path).
+- `CORS_ALLOWED_ORIGINS` must contain full origin(s).
+- For multiple frontend origins, separate by comma.
+
+### Frontend required
 
 ```env
-LOG_CHANNEL=stack
-LOG_STACK=single
-LOG_LEVEL=warning
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-FILESYSTEM_DISK=local
+VITE_API_URL=https://<backend-domain>.onrender.com/api
+VITE_BACKEND_URL=https://<backend-domain>.onrender.com
 ```
 
-### APP_KEY
+## Google OAuth Production Setup
 
-Generate locally or in Railway shell:
+In Google Cloud Console (OAuth client):
+
+Authorized redirect URI:
+
+```text
+https://<backend-domain>.onrender.com/auth/google/callback
+```
+
+Flow:
+
+1. Frontend opens `/auth/google/redirect` on backend.
+2. Google redirects to backend callback.
+3. Backend creates Sanctum token and redirects back to frontend callback route.
+
+## Sanctum, Sessions, Cache, Storage, Migrations
+
+Current production-safe choices for this project:
+
+- Sanctum: bearer tokens (SPA cookie mode is not required)
+- Sessions: `file` driver (no sessions table dependency)
+- Cache: `file` driver (no extra infrastructure required)
+- Storage: local disk is enough for current feature set
+- Migrations: executed automatically on backend startup (`migrate --force`)
+
+## Step-by-Step Publish (Render)
+
+1. Push repository to GitHub.
+2. In Render, choose New > Blueprint and select this repository.
+3. Render detects `render.yaml` and proposes two services.
+4. Create a free PostgreSQL database at Neon.
+5. Fill backend env vars in Render:
+   - `APP_URL`
+   - `FRONTEND_URL`
+   - `APP_KEY`
+   - `DB_URL`
+   - `SANCTUM_STATEFUL_DOMAINS`
+   - `CORS_ALLOWED_ORIGINS`
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `GOOGLE_REDIRECT_URI`
+6. Fill frontend env vars in Render:
+   - `VITE_API_URL`
+   - `VITE_BACKEND_URL`
+7. Deploy backend and frontend.
+8. Update Google OAuth redirect URI to the real backend domain.
+9. Redeploy backend once after OAuth env update.
+
+## Smoke Test After Deploy
+
+1. Backend health:
 
 ```bash
-php artisan key:generate --show
+curl https://<backend-domain>.onrender.com/api/test
 ```
 
-Copy the generated value into Railway as `APP_KEY`.
+Expected:
 
-### CORS
-
-`CORS_ALLOWED_ORIGINS` must include the Vercel frontend origin:
-
-```env
-CORS_ALLOWED_ORIGINS=https://taskforge.example.vercel.app
+```json
+{"message":"API works"}
 ```
 
-Do not include paths. Use origins only.
+2. Frontend:
+   - open frontend URL
+   - register/login by email-password
+   - login by Google OAuth
+   - create project and task
+   - verify dashboard and search
+   - open profile and logout
 
-### Sanctum
+## Local/CI Production Build Checks
 
-TaskForge uses Sanctum personal access tokens as bearer tokens. Cookie-based SPA auth is not required for the current frontend. Keep `SANCTUM_STATEFUL_DOMAINS` aligned with the frontend domain for future compatibility:
-
-```env
-SANCTUM_STATEFUL_DOMAINS=taskforge.example.vercel.app
-```
-
-## Frontend on Vercel
-
-### Vercel Project Setup
-
-1. Create a Vercel project.
-2. Connect the Git repository.
-3. Set the root directory to `frontend`.
-4. Build command:
+Backend tests:
 
 ```bash
+cd backend
+php artisan test
+```
+
+Frontend production build:
+
+```bash
+cd frontend
 npm run build
 ```
 
-5. Output directory:
+## Troubleshooting
 
-```text
-dist
-```
+### CORS error
 
-### Frontend Production Environment Variables
+- verify `CORS_ALLOWED_ORIGINS` contains exact frontend origin
+- run backend redeploy after env changes
 
-Required:
+### OAuth returns to wrong URL
 
-```env
-VITE_API_URL=https://<your-railway-backend-domain>/api
-VITE_BACKEND_URL=https://<your-railway-backend-domain>
-```
+- verify `FRONTEND_URL`
+- verify `GOOGLE_REDIRECT_URI`
+- verify Google Console redirect URI exactly matches backend callback
 
-`VITE_API_URL` is used by Axios for API calls.
+### 401 after login
 
-`VITE_BACKEND_URL` is used to start the Google OAuth redirect flow.
+- verify frontend uses correct `VITE_API_URL`
+- verify token is sent as `Authorization: Bearer ...`
 
-## Google OAuth
+### Database connection failure
 
-In Google Cloud Console, add these authorized redirect URIs.
-
-Local:
-
-```text
-http://127.0.0.1:8000/auth/google/callback
-```
-
-Production:
-
-```text
-https://<your-railway-backend-domain>/auth/google/callback
-```
-
-The OAuth flow is:
-
-1. User clicks `Continue with Google`.
-2. Vue redirects to `GET /auth/google/redirect` on Railway.
-3. Laravel Socialite redirects to Google.
-4. Google redirects to `GET /auth/google/callback` on Railway.
-5. Laravel finds or creates the user.
-6. Laravel creates a Sanctum token.
-7. Laravel redirects to `FRONTEND_URL/auth/google/callback?token=...&user=...`.
-8. Vue stores the token/user and opens Dashboard.
-
-## Production Checklist
-
-- `APP_ENV=production`
-- `APP_DEBUG=false`
-- `APP_URL` is the Railway backend URL
-- `FRONTEND_URL` is the Vercel frontend URL
-- `CORS_ALLOWED_ORIGINS` contains the Vercel frontend origin
-- `GOOGLE_REDIRECT_URI` matches the Railway callback URL
-- Google Cloud Console contains the production callback URL
-- Vercel has `VITE_API_URL` and `VITE_BACKEND_URL`
-- Railway has a durable database plan or persistent volume
-- `php artisan migrate --force` has been run
-- `npm run build` passes locally before deploying
-
-## Smoke Tests After Deployment
-
-Backend:
-
-```bash
-curl https://<backend>/api/test
-```
-
-Frontend:
-
-1. Open the Vercel URL.
-2. Register a user.
-3. Log out.
-4. Log in with email/password.
-5. Create a project.
-6. Create a task inside the project.
-7. Open Dashboard.
-8. Search for the project/task.
-9. Test Google login.
+- verify `DB_CONNECTION=pgsql`
+- verify `DB_URL` includes ssl mode (`sslmode=require`)

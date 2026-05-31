@@ -30,4 +30,4 @@ php artisan test
 
 ## Deployment
 
-The backend is prepared for Railway. See the root [DEPLOYMENT.md](../DEPLOYMENT.md).
+The backend is prepared for Render Docker deployment and PostgreSQL production usage. See the root [DEPLOYMENT.md](../DEPLOYMENT.md).

@@ -36,22 +36,23 @@ Backend:
 
 Deployment targets:
 
-- Frontend: Vercel
-- Backend: Railway
+- Frontend: Render Static Site
+- Backend: Render Web Service (Docker)
+- Production DB: PostgreSQL (recommended: Neon free tier)
 
 ## Architecture
 
 TaskForge uses a separated SPA/API architecture.
 
 ```text
-Vue SPA on Vercel
+Vue SPA on Render Static
         |
         | HTTPS JSON API + Bearer token
         v
-Laravel API on Railway
+Laravel API on Render Docker Web Service
         |
         v
-SQLite database
+PostgreSQL (Neon free tier)
 ```
 
 Authentication is token based. Login, registration, and Google OAuth all create Sanctum personal access tokens. The frontend stores the token and current user in Pinia/localStorage, then sends the token through Axios as `Authorization: Bearer <token>`.
@@ -69,7 +70,7 @@ TaskForge/
   backend/        Laravel API
   frontend/       Vue SPA
   docs/           API, architecture, schema, roadmap, and requirements docs
-  DEPLOYMENT.md   Vercel/Railway deployment guide
+        DEPLOYMENT.md   Render + PostgreSQL deployment guide
 ```
 
 Important backend folders:
@@ -159,9 +160,12 @@ FRONTEND_URL=http://localhost:5173
 
 DB_CONNECTION=sqlite
 
-SESSION_DRIVER=database
+SESSION_DRIVER=file
 SESSION_SECURE_COOKIE=false
 SESSION_SAME_SITE=lax
+
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
 
 SANCTUM_STATEFUL_DOMAINS=localhost,localhost:5173,127.0.0.1,127.0.0.1:5173
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
@@ -195,7 +199,7 @@ http://127.0.0.1:8000/auth/google/callback
 Production redirect URI:
 
 ```text
-https://<your-railway-backend-domain>/auth/google/callback
+https://<your-render-backend-domain>.onrender.com/auth/google/callback
 ```
 
 Set these backend variables:
@@ -203,7 +207,7 @@ Set these backend variables:
 ```env
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
-GOOGLE_REDIRECT_URI=https://<your-railway-backend-domain>/auth/google/callback
+GOOGLE_REDIRECT_URI=https://<your-render-backend-domain>.onrender.com/auth/google/callback
 ```
 
 ## Testing
@@ -227,8 +231,9 @@ npm run build
 
 TaskForge is prepared for:
 
-- Vercel frontend deployment
-- Railway backend deployment
+- Render static frontend deployment
+- Render Docker backend deployment
+- PostgreSQL production deployment
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for full deployment instructions and production environment variables.
 

@@ -34,4 +34,4 @@ npm run build
 
 ## Deployment
 
-The frontend is prepared for Vercel. See the root [DEPLOYMENT.md](../DEPLOYMENT.md).
+The frontend is prepared for Render Static deployment. See the root [DEPLOYMENT.md](../DEPLOYMENT.md).

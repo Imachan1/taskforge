@@ -103,9 +103,16 @@ class GoogleAuthController extends Controller
         }
 
         $host = strtolower($parsed['host']);
+        $configuredFrontendHost = strtolower((string) parse_url((string) config('app.frontend_url'), PHP_URL_HOST));
 
-        // Restrict dynamic callback hosts to local development targets.
-        if (! in_array($host, ['localhost', '127.0.0.1'], true)) {
+        $allowedHosts = array_values(array_filter([
+            'localhost',
+            '127.0.0.1',
+            $configuredFrontendHost,
+        ]));
+
+        // Restrict dynamic callback hosts to local development targets and configured frontend host.
+        if (! in_array($host, $allowedHosts, true)) {
             return null;
         }
 

@@ -1,5 +1,27 @@
 <?php
 
+$frontendUrl = trim((string) env('FRONTEND_URL', ''));
+$frontendOrigin = '';
+
+if ($frontendUrl !== '' && filter_var($frontendUrl, FILTER_VALIDATE_URL)) {
+    $parts = parse_url($frontendUrl);
+
+    if ($parts && isset($parts['scheme'], $parts['host'])) {
+        $frontendOrigin = sprintf(
+            '%s://%s%s',
+            $parts['scheme'],
+            $parts['host'],
+            isset($parts['port']) ? ':'.$parts['port'] : ''
+        );
+    }
+}
+
+$defaultCorsOrigins = array_values(array_filter([
+    $frontendOrigin,
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]));
+
 return [
 
     /*
@@ -17,10 +39,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => array_values(array_filter(array_map(
+    'allowed_origins' => array_values(array_unique(array_filter(array_map(
         'trim',
-        explode(',', env('CORS_ALLOWED_ORIGINS', ''))
-    ))),
+        explode(',', env('CORS_ALLOWED_ORIGINS', implode(',', $defaultCorsOrigins)))
+    )))),
 
     'allowed_origins_patterns' => [],
 
