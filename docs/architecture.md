@@ -1,83 +1,79 @@
 # Architecture
 
-## High-Level Architecture
-
-TaskForge follows a separated frontend/backend architecture.
-
-Frontend and backend communicate exclusively through REST API.
+TaskForge is a separated frontend/backend application.
 
 ```text
-Vue 3 Frontend
-       │
-       │ HTTP / JSON
-       ▼
-Laravel REST API
-       │
-       ├── MySQL
-       │
-       └── Elasticsearch
+Vue 3 SPA
+  - Vite
+  - PrimeVue
+  - Pinia
+  - Vue Router
+  - Axios
+
+        |
+        | HTTP JSON API
+        | Authorization: Bearer <Sanctum token>
+        v
+
+Laravel 12 API
+  - Sanctum
+  - Socialite
+  - Eloquent
+  - SQLite
 ```
 
----
+## Authentication
 
-# Frontend Architecture
+TaskForge uses token-based authentication.
 
-Frontend responsibilities:
+- Email/password registration creates a user and Sanctum token.
+- Email/password login creates a Sanctum token.
+- Google OAuth finds or creates a user, then creates a Sanctum token.
+- The frontend stores token/user in Pinia and localStorage.
+- Axios attaches the token to every API request.
+- Protected Vue routes validate persisted tokens through `/api/me`.
 
-* UI Rendering
-* Routing
-* State Management
-* API Communication
+## Authorization Model
 
-Technology:
+Data is scoped per user.
 
-* Vue 3
-* Composition API
-* Pinia
-* Vue Router
-* Axios
-* PrimeVue
-* SCSS
+```text
+User
+  has many Projects
 
----
+Project
+  belongs to User through owner_id
+  has many Tasks
 
-# Backend Architecture
+Task
+  belongs to Project
+```
 
-Backend responsibilities:
+Project access is checked through `projects.owner_id`.
 
-* Authentication
-* Authorization
-* Business Logic
-* Database Access
-* Search Indexing
+Task access is checked through `task.project.owner_id`.
 
-Technology:
+## Frontend Modules
 
-* Laravel
-* Sanctum
-* Eloquent ORM
+- Authentication: login, registration, Google callback
+- Dashboard: statistics and recent projects/tasks
+- Projects: CRUD and project details
+- Tasks: CRUD inside `ProjectView`
+- Search: global search across owned projects/tasks
+- Profile: name/password management
 
----
+## Backend Modules
 
-# Infrastructure
+- `AuthController`
+- `GoogleAuthController`
+- `ProfileController`
+- `DashboardController`
+- `ProjectController`
+- `TaskController`
+- `SearchController`
 
-Containers:
+## Deployment
 
-* frontend
-* backend
-* mysql
-* nginx
-* elasticsearch
-
-All services are orchestrated through Docker Compose.
-
----
-
-# Design Principles
-
-* REST API only
-* Frontend and backend are separated
-* Business logic should not live inside controllers
-* Reusable Vue components
-* Single source of truth in Pinia
-* Database-first development approach
+- Frontend: Vercel
+- Backend: Railway
+- Database: SQLite for MVP; PostgreSQL recommended for durable production data

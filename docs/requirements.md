@@ -1,456 +1,62 @@
-# TaskForge
+# Requirements
 
-## Project Overview
+## Product Scope
 
-TaskForge is a web-based project and task management platform designed for small teams, software development groups, freelancers, and agencies.
+TaskForge is an MVP project and task management application for a single authenticated user workspace.
 
-The system allows users to create projects, manage tasks, collaborate through comments, upload files, track progress through workflow stages, and quickly find information using global search.
+## Functional Requirements
 
-The primary goal of TaskForge is to provide a lightweight alternative to enterprise project management systems while maintaining a modern architecture based on Vue.js, Laravel, REST API, Docker, and Elasticsearch.
+Authentication:
 
----
+- Users can register with name, email, and password.
+- Users can log in with email/password.
+- Users can log in or register through Google OAuth.
+- Users can log out.
+- Users can view and update their profile.
+- Users can change their password.
 
-# Business Goals
+Projects:
 
-The system should help teams:
+- Users can create projects.
+- Users can list only their own projects.
+- Users can view, update, and delete only their own projects.
 
-* Organize projects
-* Manage work items
-* Track task progress
-* Collaborate through comments
-* Store project-related files
-* Monitor project activity
-* Search across all project data
+Tasks:
 
----
+- Tasks belong to projects.
+- Users can list, create, view, update, and delete tasks only within their own projects.
+- Task statuses: `todo`, `in_progress`, `done`.
+- Task priorities: `low`, `medium`, `high`.
 
-# User Roles
+Dashboard:
 
-## Administrator
+- Users can view project/task counts.
+- Users can view task status counts.
+- Users can view completion rate.
+- Users can view recent projects and tasks.
 
-Can:
+Search:
 
-* Manage users
-* Manage projects
-* Manage project members
-* Manage statuses
-* View all data
-* Delete any entity
+- Users can search their own projects by name and description.
+- Users can search tasks in their own projects by title and description.
 
-## Project Manager
+## Non-Functional Requirements
 
-Can:
+- All user data access must be scoped to the authenticated user.
+- API responses must be JSON.
+- Protected endpoints must require Sanctum bearer-token authentication.
+- Frontend configuration must use environment variables for backend URLs.
+- Backend CORS must be environment-driven for Vercel/Railway deployment.
+- Automated backend tests must pass before deployment.
+- Frontend production build must pass before deployment.
 
-* Create projects
-* Create tasks
-* Assign tasks
-* Manage project workflow
-* Upload files
-* Create announcements
+## Out of Scope for Current MVP
 
-## Team Member
-
-Can:
-
-* View assigned projects
-* Update task statuses
-* Add comments
-* Upload attachments
-* Participate in discussions
-
----
-
-# Functional Modules
-
-## Authentication Module
-
-Features:
-
-* Login
-* Logout
-* Password hashing
-* Session handling
-* Role-based access control
-
-Pages:
-
-* Login
-* User Profile
-
----
-
-## Dashboard Module
-
-Purpose:
-
-Provide a high-level overview of work.
-
-Widgets:
-
-* Active projects count
-* Tasks assigned to me
-* Overdue tasks
-* Recent activity
-* Recent announcements
-
----
-
-## Projects Module
-
-Purpose:
-
-Store and organize work.
-
-Project fields:
-
-* Name
-* Description
-* Status
-* Created By
-* Created Date
-
-Actions:
-
-* Create project
-* Edit project
-* Archive project
-* Add members
-* Remove members
-
-Project View Tabs:
-
-* Overview
-* Board
-* Files
-* Activity
-
----
-
-## Tasks Module
-
-Purpose:
-
-Track work items.
-
-Task fields:
-
-* Title
-* Description
-* Priority
-* Status
-* Assignee
-* Reporter
-* Deadline
-* Created Date
-
-Priorities:
-
-* Low
-* Medium
-* High
-* Critical
-
-Actions:
-
-* Create task
-* Edit task
-* Delete task
-* Assign task
-* Change status
-* Add comments
-* Upload files
-
----
-
-## Workflow Module
-
-Purpose:
-
-Track task progress.
-
-Default statuses:
-
-* Backlog
-* To Do
-* In Progress
-* Review
-* Done
-
-Tasks move through workflow stages.
-
-The board view displays tasks grouped by status.
-
----
-
-## Comments Module
-
-Purpose:
-
-Enable collaboration.
-
-Features:
-
-* Add comments
-* Edit own comments
-* Delete own comments
-* Show author information
-* Show timestamps
-
----
-
-## File Management Module
-
-Purpose:
-
-Store project and task attachments.
-
-Supported examples:
-
-* Images
-* PDF documents
-* ZIP archives
-* Text files
-
-Features:
-
-* Upload file
-* Download file
-* Delete file
-* Preview images
-
-Files can be attached to:
-
-* Projects
-* Tasks
-
----
-
-## News Module
-
-Purpose:
-
-Provide internal communication.
-
-Announcement fields:
-
-* Title
-* Content
-* Author
-* Publish Date
-
-Features:
-
-* Create announcement
-* Edit announcement
-* Delete announcement
-* View announcement feed
-
----
-
-## Activity Log Module
-
-Purpose:
-
-Track changes in the system.
-
-Examples:
-
-* Task created
-* Status changed
-* File uploaded
-* Comment added
-
-Activity fields:
-
-* User
-* Action
-* Entity
-* Timestamp
-
----
-
-## Global Search Module
-
-Purpose:
-
-Provide fast access to information.
-
-Search targets:
-
-* Projects
-* Tasks
-* Comments
-* Files
-* News
-
-Example:
-
-Search query:
-
-"login"
-
-Results:
-
-Task:
-Implement Login API
-
-Comment:
-Login endpoint returns 401
-
-Project:
-Authentication Refactoring
-
-News:
-Authentication migration completed
-
----
-
-# User Interface
-
-## General Layout
-
-Top Navigation Bar
-
-Contains:
-
-* Logo
-* Search
-* Notifications
-* User Menu
-
-Left Sidebar
-
-Contains:
-
-* Dashboard
-* Projects
-* Tasks
-* News
-* Search Results
-
-Main Content Area
-
-Displays current page content.
-
----
-
-## Project Board View
-
-Kanban-style layout.
-
-Columns:
-
-Backlog
-
-To Do
-
-In Progress
-
-Review
-
-Done
-
-Each task card displays:
-
-* Title
-* Priority
-* Assignee
-* Due Date
-
----
-
-## Task Details View
-
-Sections:
-
-* Description
-* Metadata
-* Attachments
-* Comments
-* Activity History
-
-The task page should resemble a professional issue tracking system.
-
----
-
-# Non-Functional Requirements
-
-Performance:
-
-* API responses below 500 ms for common requests
-
-Security:
-
-* Authentication required
-* Password hashing
-* Authorization checks
-
-Scalability:
-
-* REST API architecture
-* Elasticsearch integration
-
-Maintainability:
-
-* Modular structure
-* Service-based business logic
-* Separation of frontend and backend
-
-Deployment:
-
-* Docker Compose environment
-* Separate containers for:
-
-  * Frontend
-  * Backend
-  * MySQL
-  * Elasticsearch
-  * Nginx
-
----
-
-# Technology Stack
-
-## Frontend
-
-- Vue 3
-- Composition API
-- Vue Router
-- Pinia
-- Axios
-- SCSS
-- PrimeVue
-
-## Backend
-
-- Laravel
-- REST API
-- Laravel Sanctum
-
-## Database
-
-- MySQL
-
-## Infrastructure
-
-- Docker
-- Docker Compose
-
-## Search
-
+- Multi-user teams
+- Project members
+- Comments
+- File attachments
+- Notifications
+- News feed
 - Elasticsearch
-
----
-
-# UI Framework
-
-TaskForge uses PrimeVue components as a foundation for:
-
-- Data Tables
-- Dialogs
-- Forms
-- Toast Notifications
-- Menus
-- Inputs
-
-Custom styling is implemented using SCSS.
+- Docker Compose production stack

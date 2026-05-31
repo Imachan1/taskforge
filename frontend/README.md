@@ -1,44 +1,37 @@
-# frontend
+# TaskForge Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue 3 SPA for TaskForge.
 
-## Recommended IDE Setup
+## Stack
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Vue 3
+- Vite
+- PrimeVue
+- Pinia
+- Vue Router
+- Axios
 
-## Recommended Browser Setup
+## Local Setup
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
+cp .env.example .env
 npm run dev
 ```
 
-### Compile and Minify for Production
+Required `.env`:
 
-```sh
+```env
+VITE_API_URL=http://127.0.0.1:8000/api
+VITE_BACKEND_URL=http://127.0.0.1:8000
+```
+
+## Build
+
+```bash
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Deployment
 
-```sh
-npm run lint
-```
+The frontend is prepared for Vercel. See the root [DEPLOYMENT.md](../DEPLOYMENT.md).

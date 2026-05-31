@@ -15,8 +15,7 @@ const loading = ref(false)
 
 const router = useRouter()
 const auth = useAuthStore()
-const backendUrl =
-  import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000'
+const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
 
 const signIn = async () => {
   errorMessage.value = ''
@@ -40,6 +39,11 @@ const signIn = async () => {
 }
 
 const signInWithGoogle = () => {
+  if (!backendUrl) {
+    errorMessage.value = 'Google sign in is not configured.'
+    return
+  }
+
   window.location.href = `${backendUrl}/auth/google/redirect`
 }
 </script>
