@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import LoginView from '../views/LoginView.vue'
-import RegisterView from '../views/RegisterView.vue'
 import GoogleCallbackView from '../views/GoogleCallbackView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import ProjectsView from '../views/ProjectsView.vue'
@@ -31,11 +30,6 @@ const router = createRouter({
           path: 'login',
           name: 'login',
           component: LoginView,
-        },
-        {
-          path: 'register',
-          name: 'register',
-          component: RegisterView,
         },
         {
           path: 'auth/google/callback',
@@ -86,7 +80,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
-  const publicRoutes = ['login', 'register', 'google-callback']
+  const publicRoutes = ['login', 'google-callback']
 
   if (to.name === 'google-callback') {
     return true
@@ -100,7 +94,7 @@ router.beforeEach(async (to) => {
     return { name: 'login' }
   }
 
-  if (auth.isAuthenticated && ['login', 'register'].includes(to.name)) {
+  if (auth.isAuthenticated && to.name === 'login') {
     return { name: 'dashboard' }
   }
 })
