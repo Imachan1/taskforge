@@ -7,6 +7,7 @@ import DashboardView from '../views/DashboardView.vue'
 import ProjectsView from '../views/ProjectsView.vue'
 import ProjectView from '../views/ProjectView.vue'
 import SearchView from '../views/SearchView.vue'
+import ProfileView from '../views/ProfileView.vue'
 
 import MainLayout from '../layouts/MainLayout.vue'
 import AuthLayout from '../layouts/AuthLayout.vue'
@@ -71,6 +72,12 @@ const router = createRouter({
           path: 'search',
           name: 'search',
           component: SearchView,
+        },
+
+        {
+          path: 'profile',
+          name: 'profile',
+          component: ProfileView,
         },
       ],
     },

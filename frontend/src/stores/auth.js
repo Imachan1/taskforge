@@ -22,6 +22,11 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('auth_token', token)
     },
 
+    setUser(user) {
+      this.user = user
+      localStorage.setItem('auth_user', JSON.stringify(user))
+    },
+
     async login(credentials) {
       const { data } = await api.post('/login', credentials)
 
@@ -52,8 +57,7 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         const { data } = await getCurrentUser()
-        this.user = data.user
-        localStorage.setItem('auth_user', JSON.stringify(data.user))
+        this.setUser(data.user)
         return data.user
       } catch (error) {
         this.clearSession()
