@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Project;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -40,13 +41,47 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($projects as $project) {
-            Project::firstOrCreate(
+            $createdProject = Project::firstOrCreate(
                 [
                     'owner_id' => $user->id,
                     'name' => $project['name'],
                 ],
                 ['description' => $project['description']],
             );
+
+            $tasks = [
+                [
+                    'title' => 'Define scope',
+                    'description' => 'Write the first version of the project scope and constraints.',
+                    'status' => 'todo',
+                    'priority' => 'high',
+                    'due_date' => now()->addWeek()->toDateString(),
+                ],
+                [
+                    'title' => 'Review milestones',
+                    'description' => 'Check project milestones and align next delivery steps.',
+                    'status' => 'in_progress',
+                    'priority' => 'medium',
+                    'due_date' => now()->addWeeks(2)->toDateString(),
+                ],
+                [
+                    'title' => 'Archive notes',
+                    'description' => 'Collect completed notes and store them with the project.',
+                    'status' => 'done',
+                    'priority' => 'low',
+                    'due_date' => null,
+                ],
+            ];
+
+            foreach ($tasks as $task) {
+                Task::firstOrCreate(
+                    [
+                        'project_id' => $createdProject->id,
+                        'title' => $task['title'],
+                    ],
+                    $task,
+                );
+            }
         }
     }
 }

@@ -4,7 +4,6 @@ import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import ProjectsView from '../views/ProjectsView.vue'
 import ProjectView from '../views/ProjectView.vue'
-import TasksView from '../views/TasksView.vue'
 import NewsView from '../views/NewsView.vue'
 import SearchView from '../views/SearchView.vue'
 
@@ -55,12 +54,6 @@ const router = createRouter({
           path: 'projects/:id',
           name: 'project',
           component: ProjectView,
-        },
-
-        {
-          path: 'tasks',
-          name: 'tasks',
-          component: TasksView,
         },
 
         {

@@ -9,9 +9,11 @@ import ProgressSpinner from 'primevue/progressspinner'
 import Textarea from 'primevue/textarea'
 
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useProjectsStore } from '../stores/projects'
 
 const projectsStore = useProjectsStore()
+const router = useRouter()
 
 const dialogVisible = ref(false)
 const editingProject = ref(null)
@@ -87,6 +89,10 @@ const removeProject = async (project) => {
   await projectsStore.remove(project.id)
 }
 
+const openProject = (event) => {
+  router.push({ name: 'project', params: { id: event.data.id } })
+}
+
 onMounted(() => {
   projectsStore.fetchProjects()
 })
@@ -129,6 +135,8 @@ onMounted(() => {
       stripedRows
       responsiveLayout="scroll"
       emptyMessage="No projects yet."
+      rowHover
+      @row-click="openProject"
     >
       <Column
         field="name"
@@ -166,7 +174,7 @@ onMounted(() => {
             text
             rounded
             aria-label="Edit project"
-            @click="openEditDialog(data)"
+            @click.stop="openEditDialog(data)"
           />
           <Button
             icon="pi pi-trash"
@@ -174,7 +182,7 @@ onMounted(() => {
             text
             rounded
             aria-label="Delete project"
-            @click="removeProject(data)"
+            @click.stop="removeProject(data)"
           />
         </template>
       </Column>
@@ -276,6 +284,10 @@ onMounted(() => {
 :deep(.actions-cell) {
   display: flex;
   gap: 0.25rem;
+}
+
+:deep(.p-datatable-tbody > tr) {
+  cursor: pointer;
 }
 
 @media (max-width: 640px) {

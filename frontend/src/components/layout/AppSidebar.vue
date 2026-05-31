@@ -9,8 +9,6 @@
 
       <RouterLink to="/projects">Projects</RouterLink>
 
-      <RouterLink to="/tasks">Tasks</RouterLink>
-
       <RouterLink to="/news">News</RouterLink>
 
       <RouterLink to="/search">Search</RouterLink>
