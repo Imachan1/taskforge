@@ -27,7 +27,32 @@ const registerForm = reactive({
 const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
-const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
+
+const normalizeUrl = (value) => value?.trim().replace(/\/+$/, '') || ''
+
+const resolveBackendUrl = () => {
+  const configuredBackendUrl = normalizeUrl(import.meta.env.VITE_BACKEND_URL)
+
+  if (configuredBackendUrl) {
+    return configuredBackendUrl
+  }
+
+  const configuredApiUrl = normalizeUrl(import.meta.env.VITE_API_URL)
+
+  if (configuredApiUrl && /^https?:\/\//.test(configuredApiUrl)) {
+    return configuredApiUrl.replace(/\/api(?:\/)?$/, '')
+  }
+
+  const { protocol, hostname, origin } = window.location
+
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `${protocol}//127.0.0.1:8000`
+  }
+
+  return origin
+}
+
+const backendUrl = resolveBackendUrl()
 
 const registerValidationMessages = computed(() =>
   Object.values(registerErrors.value).flat(),
@@ -80,7 +105,11 @@ const signInWithGoogle = () => {
     return
   }
 
-  window.location.href = `${backendUrl}/auth/google/redirect`
+  const params = new URLSearchParams({
+    frontend_url: window.location.origin,
+  })
+
+  window.location.href = `${backendUrl}/auth/google/redirect?${params.toString()}`
 }
 
 const register = async () => {
@@ -129,7 +158,7 @@ onMounted(() => {
           <div class="card-header">
             <p class="kicker">Welcome back</p>
             <h2>Login</h2>
-            <span>Enter your workspace credentials.</span>
+            <span class="single-line-subtitle">Enter your workspace credentials.</span>
           </div>
 
           <div class="form">
@@ -326,7 +355,6 @@ onMounted(() => {
   grid-template-columns: minmax(0, 0.92fr) minmax(22rem, 29rem);
   gap: clamp(2rem, 6vw, 6rem);
   align-items: center;
-  animation: enter 800ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .auth-shell,
@@ -390,7 +418,6 @@ onMounted(() => {
   min-width: 0;
   transform-style: preserve-3d;
   transition: transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
-  animation: float 7s ease-in-out infinite;
   will-change: transform;
 }
 
@@ -409,16 +436,17 @@ onMounted(() => {
   overflow: hidden;
   min-width: 0;
   backface-visibility: hidden;
-  border: 1px solid rgba(125, 211, 252, 0.24);
+  border: 1px solid rgba(125, 211, 252, 0.16);
   border-radius: 30px;
   background:
-    linear-gradient(145deg, rgba(8, 23, 47, 0.78), rgba(15, 42, 76, 0.52)),
-    rgba(8, 20, 38, 0.54);
+    linear-gradient(148deg, rgba(10, 28, 56, 0.08), rgba(16, 46, 82, 0.02)),
+    rgba(7, 18, 36, 0.01);
   box-shadow:
-    0 30px 90px rgba(0, 0, 0, 0.48),
-    0 0 0 1px rgba(56, 189, 248, 0.08) inset,
-    0 0 72px rgba(14, 165, 233, 0.18);
-  backdrop-filter: blur(28px);
+    0 14px 34px rgba(0, 0, 0, 0.14),
+    0 0 0 1px rgba(56, 189, 248, 0.06) inset,
+    0 0 28px rgba(14, 165, 233, 0.06);
+  backdrop-filter: blur(10px) saturate(115%) brightness(1.02);
+  -webkit-backdrop-filter: blur(10px) saturate(115%) brightness(1.02);
 }
 
 .card-face::before {
@@ -426,9 +454,24 @@ onMounted(() => {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(120deg, transparent 0%, rgba(125, 211, 252, 0.14) 42%, transparent 58%),
-    radial-gradient(circle at 18% 0%, rgba(59, 130, 246, 0.25), transparent 36%);
-  opacity: 0.82;
+    linear-gradient(122deg, transparent 0%, rgba(186, 230, 253, 0.13) 42%, transparent 60%),
+    radial-gradient(circle at 14% -10%, rgba(255, 255, 255, 0.1), transparent 40%);
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.card-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 0.75px 0.9px, rgba(255, 255, 255, 0.13) 0 0.6px, transparent 0.75px),
+    radial-gradient(circle at 1.2px 1.1px, rgba(255, 255, 255, 0.08) 0 0.45px, transparent 0.7px),
+    radial-gradient(110% 86% at 82% 74%, rgba(255, 255, 255, 0.1), transparent 56%);
+  background-size: 4.2px 4.2px, 5px 5px, auto;
+  background-position: 0 0, 1.1px 1.3px, 0 0;
+  opacity: 0.01;
+  mix-blend-mode: screen;
   pointer-events: none;
 }
 
@@ -445,7 +488,9 @@ onMounted(() => {
 .card-header {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.45rem;
+  text-align: center;
 }
 
 .card-header h2 {
@@ -457,6 +502,12 @@ onMounted(() => {
 
 .card-header span {
   color: #93b7db;
+  max-width: 24ch;
+}
+
+.card-header .single-line-subtitle {
+  max-width: none;
+  white-space: nowrap;
 }
 
 .form {
@@ -614,29 +665,6 @@ onMounted(() => {
 .auth-link button:focus-visible {
   color: #e0f2fe;
   text-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
-}
-
-@keyframes enter {
-  from {
-    opacity: 0;
-    transform: scale(0.96) translateY(1.5rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-
-  50% {
-    translate: 0 -0.7rem;
-  }
 }
 
 @media (max-width: 1100px) {

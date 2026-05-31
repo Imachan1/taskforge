@@ -308,7 +308,7 @@ onMounted(loadProfile)
 
 .profile-page p {
   margin: 0.25rem 0 0;
-  opacity: 0.65;
+  color: #9dbbda;
 }
 
 .loading-state {
@@ -322,7 +322,7 @@ onMounted(loadProfile)
 }
 
 .profile-summary span {
-  color: #6b7280;
+  color: #8aa8c9;
   display: inline-block;
   margin-top: 0.5rem;
 }

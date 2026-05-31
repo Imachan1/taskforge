@@ -175,7 +175,7 @@ watch(query, () => {
 
 .search-page p {
   margin: 0.25rem 0 0;
-  opacity: 0.65;
+  color: #9dbbda;
 }
 
 .search-box {
@@ -204,7 +204,7 @@ watch(query, () => {
 .result-row {
   width: 100%;
   border: 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(125, 211, 252, 0.16);
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -221,7 +221,7 @@ watch(query, () => {
 .result-row span,
 .muted,
 .empty-state {
-  color: #6b7280;
+  color: #8aa8c9;
 }
 
 .empty-state {

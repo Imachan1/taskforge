@@ -413,7 +413,7 @@ onMounted(loadProject)
 
 .project-header p {
   margin: 0.25rem 0 0;
-  opacity: 0.65;
+  color: #9dbbda;
 }
 
 .loading-state {
@@ -429,7 +429,7 @@ onMounted(loadProject)
 }
 
 .task-title span {
-  color: #4b5563;
+  color: #8fb0d2;
 }
 
 .inline-control {

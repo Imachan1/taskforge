@@ -173,7 +173,7 @@ onMounted(loadDashboard)
 
 .dashboard-page p {
   margin: 0.25rem 0 0;
-  opacity: 0.65;
+  color: #9dbbda;
 }
 
 .loading-state {
@@ -195,7 +195,7 @@ onMounted(loadDashboard)
 }
 
 .stat-card span {
-  color: #4b5563;
+  color: #8fb0d2;
   font-weight: 600;
 }
 
@@ -212,7 +212,7 @@ onMounted(loadDashboard)
 .list-row {
   width: 100%;
   border: 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(125, 211, 252, 0.16);
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -227,7 +227,7 @@ onMounted(loadDashboard)
 }
 
 .list-row span {
-  color: #4b5563;
+  color: #8fb0d2;
 }
 
 .tag-row {
@@ -236,7 +236,7 @@ onMounted(loadDashboard)
 }
 
 .empty-state {
-  color: #6b7280;
+  color: #8aa8c9;
   padding: 1rem 0;
 }
 

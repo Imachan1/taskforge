@@ -1,29 +1,3 @@
-<script setup>
-import Button from 'primevue/button'
-
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../../stores/auth'
-
-const router = useRouter()
-const auth = useAuthStore()
-
-const initials = computed(() => {
-  const name = auth.user?.name || auth.user?.email || 'U'
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-})
-
-const logout = async () => {
-  await auth.logout()
-  await router.push({ name: 'login' })
-}
-</script>
-
 <template>
   <aside class="sidebar">
     <div class="sidebar__logo">
@@ -36,41 +10,7 @@ const logout = async () => {
       <RouterLink to="/projects">Projects</RouterLink>
 
       <RouterLink to="/search">Search</RouterLink>
-
-      <RouterLink to="/profile">Profile</RouterLink>
     </nav>
-
-    <div
-      v-if="auth.user"
-      class="sidebar__user"
-    >
-      <img
-        v-if="auth.user.avatar_url"
-        :src="auth.user.avatar_url"
-        alt=""
-        class="sidebar__avatar"
-      >
-      <div
-        v-else
-        class="sidebar__avatar sidebar__avatar--fallback"
-      >
-        {{ initials }}
-      </div>
-
-      <div class="sidebar__user-text">
-        <strong>{{ auth.user.name }}</strong>
-        <span>{{ auth.user.email }}</span>
-      </div>
-
-      <Button
-        label="Logout"
-        icon="pi pi-sign-out"
-        severity="secondary"
-        size="small"
-        outlined
-        @click="logout"
-      />
-    </div>
   </aside>
 </template>
 
@@ -78,22 +18,37 @@ const logout = async () => {
 .sidebar {
   width: 240px;
   min-height: 100vh;
-
-  background: #111827;
-  border-right: 1px solid #1f2937;
-
+  position: relative;
+  background:
+    linear-gradient(170deg, rgba(7, 22, 44, 0.82), rgba(5, 17, 34, 0.72)),
+    rgba(4, 15, 30, 0.6);
+  border-right: 1px solid rgba(125, 211, 252, 0.16);
+  box-shadow:
+    inset -1px 0 0 rgba(56, 189, 248, 0.06),
+    10px 0 40px rgba(2, 6, 23, 0.32);
+  backdrop-filter: blur(12px) saturate(118%);
+  -webkit-backdrop-filter: blur(12px) saturate(118%);
   display: flex;
   flex-direction: column;
   gap: 24px;
-
   padding: 24px;
 }
 
+.sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(56, 189, 248, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(59, 130, 246, 0.06), transparent 28%);
+}
+
 .sidebar__logo {
-  color: white;
+  color: #f8fbff;
   font-size: 24px;
   font-weight: 700;
-
+  letter-spacing: 0.01em;
   margin-bottom: 32px;
 }
 
@@ -105,65 +60,26 @@ const logout = async () => {
 }
 
 .sidebar__nav a {
-  color: #d1d5db;
-
+  color: #b7d2ec;
   text-decoration: none;
-
   padding: 12px 16px;
-
-  border-radius: 8px;
-
-  transition: 0.2s;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: 180ms;
 }
 
 .sidebar__nav a:hover {
-  background: #1f2937;
+  color: #e7f4ff;
+  border-color: rgba(125, 211, 252, 0.22);
+  background: rgba(17, 58, 126, 0.28);
 }
 
 .sidebar__nav a.router-link-active {
-  background: #2563eb;
-  color: white;
-}
-
-.sidebar__user {
-  border-top: 1px solid #1f2937;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-top: 16px;
-}
-
-.sidebar__avatar {
-  border-radius: 999px;
-  height: 44px;
-  object-fit: cover;
-  width: 44px;
-}
-
-.sidebar__avatar--fallback {
-  align-items: center;
-  background: #2563eb;
-  color: white;
-  display: flex;
-  font-weight: 700;
-  justify-content: center;
-}
-
-.sidebar__user-text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.sidebar__user-text strong {
-  color: white;
-}
-
-.sidebar__user-text span {
-  color: #9ca3af;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #ffffff;
+  border-color: rgba(125, 211, 252, 0.2);
+  background: linear-gradient(135deg, rgba(29, 78, 216, 0.86), rgba(37, 99, 235, 0.8));
+  box-shadow:
+    0 8px 20px rgba(30, 64, 175, 0.32),
+    0 0 14px rgba(56, 189, 248, 0.16);
 }
 </style>
