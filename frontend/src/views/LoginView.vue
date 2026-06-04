@@ -515,6 +515,7 @@ onMounted(() => {
   flex-direction: column;
   gap: 0.95rem;
   min-width: 0;
+  pointer-events: auto;
 }
 
 .field {
@@ -522,6 +523,7 @@ onMounted(() => {
   flex-direction: column;
   gap: 0.45rem;
   min-width: 0;
+  pointer-events: auto;
 }
 
 .field label {
