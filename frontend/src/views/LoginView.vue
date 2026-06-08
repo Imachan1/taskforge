@@ -448,6 +448,8 @@ onMounted(() => {
   backdrop-filter: blur(10px) saturate(115%) brightness(1.02);
   -webkit-backdrop-filter: blur(10px) saturate(115%) brightness(1.02);
   pointer-events: none;
+  visibility: hidden;
+  z-index: 0;
 }
 
 .card-face::before {
@@ -483,6 +485,8 @@ onMounted(() => {
 .card-stage:not(.is-flipped) .card-face--front,
 .card-stage.is-flipped .card-face--back {
   pointer-events: auto;
+  visibility: visible;
+  z-index: 2;
 }
 
 .card-header,
