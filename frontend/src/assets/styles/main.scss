@@ -2,3 +2,126 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
+
+.p-dialog-mask {
+  background:
+    radial-gradient(circle at 50% 34%, rgba(14, 165, 233, 0.16), transparent 28rem),
+    rgba(2, 8, 23, 0.68);
+  backdrop-filter: blur(5px) saturate(112%);
+  -webkit-backdrop-filter: blur(5px) saturate(112%);
+}
+
+.p-dialog {
+  overflow: hidden;
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, rgba(8, 23, 47, 0.96), rgba(15, 42, 76, 0.88)),
+    rgba(7, 18, 36, 0.94);
+  box-shadow:
+    0 28px 78px rgba(0, 0, 0, 0.46),
+    0 0 0 1px rgba(56, 189, 248, 0.07) inset;
+  color: #dcecff;
+}
+
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-content,
+.p-dialog .p-dialog-footer {
+  background: transparent;
+  color: #dcecff;
+}
+
+.p-dialog .p-dialog-header {
+  align-items: flex-start;
+  padding: 1.25rem 1.35rem 0.85rem;
+  border-bottom: 1px solid rgba(125, 211, 252, 0.12);
+}
+
+.p-dialog .p-dialog-title {
+  color: #f0f8ff;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.p-dialog .p-dialog-header-actions {
+  margin-top: -0.2rem;
+}
+
+.p-dialog .p-dialog-close-button {
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 12px;
+  color: #b6d0ea;
+  background: rgba(4, 16, 33, 0.46);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.p-dialog .p-dialog-close-button:hover {
+  border-color: rgba(125, 211, 252, 0.4);
+  color: #ffffff;
+  background: rgba(17, 58, 126, 0.38);
+}
+
+.p-dialog .p-dialog-content {
+  padding: 1.15rem 1.35rem 0.75rem;
+}
+
+.p-dialog .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  padding: 0.85rem 1.35rem 1.25rem;
+  border-top: 1px solid rgba(125, 211, 252, 0.1);
+}
+
+.p-dialog label {
+  color: #eef7ff;
+}
+
+.p-dialog .p-inputtext,
+.p-dialog .p-textarea,
+.p-dialog .p-select {
+  width: 100%;
+  border: 1px solid rgba(148, 197, 255, 0.24);
+  border-radius: 14px;
+  background: rgba(4, 16, 33, 0.62);
+  color: #eaf6ff;
+}
+
+.p-dialog .p-inputtext:hover,
+.p-dialog .p-textarea:hover,
+.p-dialog .p-select:hover {
+  border-color: rgba(125, 211, 252, 0.38);
+}
+
+.p-dialog .p-inputtext:focus,
+.p-dialog .p-textarea:focus,
+.p-dialog .p-select.p-focus {
+  border-color: rgba(56, 189, 248, 0.88);
+  box-shadow:
+    0 0 0 3px rgba(14, 165, 233, 0.14),
+    0 0 22px rgba(56, 189, 248, 0.15);
+}
+
+.p-dialog .p-button {
+  border-radius: 14px;
+}
+
+.p-dialog .p-button:not(.p-button-text):not(.p-button-outlined) {
+  border: 1px solid rgba(125, 211, 252, 0.3);
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 58%, #1d4ed8 100%);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.28);
+}
+
+.p-dialog .p-button.p-button-text {
+  color: #b6d0ea;
+}
+
+.p-dialog .p-button.p-button-text:hover {
+  background: rgba(17, 58, 126, 0.28);
+  color: #ffffff;
+}
